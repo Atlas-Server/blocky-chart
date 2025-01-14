@@ -3,6 +3,16 @@ entries:
   blocky:
   - apiVersion: v2
     appVersion: "0.24"
+    created: "2025-01-14T22:33:24.581709405Z"
+    description: A Helm chart for deploying the Blocky DNS
+    digest: e640a4fe1f74691301bd8879b256ee6bd22a5fe955133722583b171e61064b09
+    name: blocky
+    type: application
+    urls:
+    - https://github.com/Atlas-Server/blocky-chart/releases/download/blocky-0.0.04/blocky-0.0.04.tgz
+    version: 0.0.04
+  - apiVersion: v2
+    appVersion: "0.24"
     created: "2025-01-14T04:37:52.610510253Z"
     description: A Helm chart for deploying the Blocky DNS
     digest: dd004129f49a09da1662dca5e44279a74b5f8325b1f550b57b1ce6794dcb4e61
@@ -31,4 +41,4 @@ entries:
     urls:
     - https://github.com/Atlas-Server/blocky-chart/releases/download/blocky-0.0.01/blocky-0.0.01.tgz
     version: 0.0.01
-generated: "2025-01-14T04:37:52.6105302Z"
+generated: "2025-01-14T22:33:24.581730915Z"
