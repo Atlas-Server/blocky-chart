@@ -1,0 +1,6 @@
+image:
+  name: blocky-controller
+  version: 0.0.01
+build:
+  platforms: linux/amd64,linux/arm64
+  args: ""

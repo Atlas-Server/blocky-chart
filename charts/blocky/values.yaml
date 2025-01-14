@@ -1,0 +1,56 @@
+
+application:
+  image:
+    repository: spx01/blocky
+    tag: latest
+    pullPolicy: IfNotPresent
+  config:
+    upstreamDnsServers: []
+    blockLists: []
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  
+controller:
+  image:
+    repository: teegank/blocky-controller
+    tag: latest
+    pullPolicy: IfNotPresent
+  config:
+    watchDNSMappings: true
+    updateInterval: 15000
+    retryInterval: 30000
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+
+dnsService:
+  enabled: true
+  type: LoadBalancer
+  additionalProperties: {}
+
+webService:
+  enabled: true
+  type: ClusterIP
+  additionalProperties: {}
+
+dnsMappings:
+  - name: blocky-dashboard
+    domain: "blocky.atl.as"
+    ip: ""
+    labels:
+      app: blocky

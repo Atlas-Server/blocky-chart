@@ -1,0 +1,22 @@
+{
+    "name": "blocky-controller",
+    "version": "1.0.0",
+    "description": "Kubernetes controller for managing Blocky CRDs",
+    "main": "src/main.js",
+    "type": "module",
+    "scripts": {
+        "start": "node src/main.js",
+        "dev": "node --env-file=.env src/main.js"
+    },
+    "author": "Teegan Krieger",
+    "license": "ISC",
+    "dependencies": {
+        "@kubernetes/client-node": "^1.0.0",
+        "ajv": "^8.17.1",
+        "console-stamp": "^3.1.2",
+        "express": "^4.21.2",
+        "yaml": "^2.7.0"
+    },
+    "devDependencies": {
+    }
+}

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: blocky
+description: A Helm chart for deploying the Blocky DNS
+type: application
+version: 0.0.01
+appVersion: 0.24
