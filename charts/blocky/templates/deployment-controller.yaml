@@ -18,6 +18,7 @@ spec:
         app: blocky-controller
     spec:
       restartPolicy: Always
+      serviceAccountName: blocky-controller
       containers:
         - name: controller
           image: "{{ .Values.controller.image.repository | default "teegank/blocky-controller" }}:{{ .Values.controller.image.tag | default "latest" }}"
