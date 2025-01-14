@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: controller-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: blocky-controller
+data:
+  config.yaml: |-
+    blocky:
+      configMapName: blocky-config
+      configMapNamespace: {{ .Release.Namespace }}
+    controller:
+      watchDNSMappings: {{ .Values.controller.config.watchDNSMappings | default true }}
+      updateInterval: {{ .Values.controller.config.updateInterval | default 5000 }}
+      retryInterval: {{ .Values.controller.config.retryInterval | default 30000 }}

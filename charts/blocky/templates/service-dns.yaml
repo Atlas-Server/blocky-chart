@@ -1,0 +1,25 @@
+{{- if .Values.dnsService.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: dns-service
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: blocky
+spec:
+  type: {{ .Values.dnsService.type | default "LoadBalancer" }}
+  selector:
+    app: blocky
+  ports:
+    - name: tcp
+      port: {{ .Values.dnsService.dnsPort | default 53 }}
+      targetPort: dns-tcp
+      protocol: TCP
+    - name: udp
+      port: {{ .Values.dnsService.dnsPort | default 53 }}
+      targetPort: dns-udp
+      protocol: UDP
+  {{- if .Values.dnsService.additionalProperties }}
+  {{- toYaml .Values.dnsService.additionalProperties | nindent 2 }}
+  {{- end }}
+{{- end -}}

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blocky-application
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: blocky
+spec:
+  replicas: {{ .Values.application.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: blocky
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: blocky
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: application
+          image: "{{ .Values.application.image.repository | default "spx01/blocky" }}:{{ .Values.application.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.application.image.pullPolicy | default "IfNotPresent" }}
+          resources:
+            {{- toYaml .Values.application.resources | nindent 12 }}
+          volumeMounts:
+            - name: blocky-config
+              mountPath: /app/config.yml
+              subPath: config.yml
+          ports:
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: http
+              containerPort: 4000
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /
+              port: 4000
+            failureThreshold: 10
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4000
+            periodSecond: 30
+            failureThreshold: 1
+      volumes:
+        - name: blocky-config
+          configMap:
+            name: blocky-config
+      nodeSelector:
+        {{- toYaml .Values.application.nodeSelector | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.application.affinity | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.application.tolerations | nindent 8 }}

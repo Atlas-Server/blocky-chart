@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blocky-controller
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: blocky-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blocky-controller
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: blocky-controller
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: controller
+          image: "{{ .Values.controller.image.repository | default "teegank/blocky-controller" }}:{{ .Values.controller.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy | default "IfNotPresent" }}
+          resources:
+            {{- toYaml .Values.controller.resources | nindent 12 }}
+          volumeMounts:
+            - name: controller-config
+              mountPath: /controller/config.yaml
+              subPath: config.yaml
+          startupProbe:
+            httpGet:
+              path: /status
+              port: 3000
+            failureThreshold: 10
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 3000
+            periodSecond: 30
+            failureThreshold: 3
+      volumes:
+        - name: controller-config
+          configMap:
+            name: controller-config
+      nodeSelector:
+        {{- toYaml .Values.controller.nodeSelector | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.controller.affinity | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.controller.tolerations | nindent 8 }}
