@@ -68,15 +68,24 @@ class Controller {
     #statusEndpoint(req, res) {
 
         if (this.#controllerConfig.controller.watchDNSMappings && !this.#dnsMappingsWatcher.isWatching()) {
+
             res.status(500);
             res.send("DNS mappings watcher is not running");
             return;
+
         }
 
         res.send('RUNNING');
+        res.status(200);
     }
 
-    async #completeControllerStartup() {
+    async #startWatchers() {
+
+        if (this.#controllerConfig.controller.watchDNSMappings) {
+
+            await this.#dnsMappingsWatcher.beginWatch();
+
+        }
 
         console.log("Controller started");
 
@@ -142,19 +151,11 @@ class Controller {
 
         console.log("Starting Controller...");
 
-        if (this.#controllerConfig.controller.watchDNSMappings) {
-
-            await AsyncHelpers.retry(this.#dnsMappingsWatcher.beginWatch.bind(this.#dnsMappingsWatcher), this.#controllerConfig.controller.retryInterval);
-
-        }
-
-        console.log("Stating Liveness Endpoint...");
-
         this.#expressApp = createExpressApp();
 
         this.#expressApp.get('/status', this.#statusEndpoint.bind(this));
 
-        this.#expressApp.listen(3000, this.#completeControllerStartup.bind(this));
+        this.#expressApp.listen(3000, this.#startWatchers.bind(this));
 
     }
 
