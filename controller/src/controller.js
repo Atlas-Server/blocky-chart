@@ -2,6 +2,7 @@ import createExpressApp from 'express';
 import * as AsyncHelpers from './util/async-helpers.js';
 import * as BlockyConfig from './config/blocky-config.js';
 import { ConfigMap } from './lifetime/configmap.js';
+import { Deployment } from './lifetime/deployment.js';
 import { Watcher } from './lifetime/watcher.js'
 
 class Controller {
@@ -12,6 +13,7 @@ class Controller {
     #expressApp;
 
     #blockyConfigMap;
+    #blockyDeployment;
     #dnsMappingsWatcher;
 
     #isDirty = false;
@@ -23,7 +25,8 @@ class Controller {
         this.#controllerConfig = controllerConfig;
         this.#kubeConfig = kubeConfig;
 
-        this.#blockyConfigMap = new ConfigMap(kubeConfig, this.#controllerConfig.blocky.configMapName, this.#controllerConfig.blocky.configMapNamespace);
+        this.#blockyConfigMap = new ConfigMap(kubeConfig, this.#controllerConfig.blocky.configMapName, this.#controllerConfig.blocky.namespace);
+        this.#blockyDeployment = new Deployment(kubeConfig, this.#controllerConfig.blocky.deploymentName, this.#controllerConfig.blocky.namespace);
         this.#dnsMappingsWatcher = new Watcher(kubeConfig, "/apis/blocky.io/v1/dnsmappings/", this.#onAddDnsMapping.bind(this), this.#onUpdateDnsMapping.bind(this), this.#onDeleteDnsMapping.bind(this));
 
     }
@@ -32,12 +35,12 @@ class Controller {
 
         const name = apiObj.metadata.name;
         const domain = apiObj.spec.domain;
-        const ip = apiObj.spec.ip;
+        const ipAddress = apiObj.spec.ipAddress;
 
-        this.#dnsMappings[name] = { domain: domain, ip: ip };
+        this.#dnsMappings[name] = { domain: domain, ipAddress: ipAddress };
         this.#isDirty = true;
 
-        console.log(`Received new DNS mapping '${name}' { domain: ${domain}, ip: ${ip} }`);
+        console.log(`Received new DNS mapping '${name}' { domain: ${domain}, ipAddress: ${ipAddress} }`);
 
     }
 
@@ -45,12 +48,12 @@ class Controller {
 
         const name = apiObj.metadata.name;
         const domain = apiObj.spec.domain;
-        const ip = apiObj.spec.ip;
+        const ipAddress = apiObj.spec.ipAddress;
 
-        this.#dnsMappings[name] = { domain: domain, ip: ip };
+        this.#dnsMappings[name] = { domain: domain, ipAddress: ipAddress };
         this.#isDirty = true;
 
-        console.log(`Received update for DNS mapping '${name}' { domain: ${domain}, ip: ${ip} }`);
+        console.log(`Received update for DNS mapping '${name}' { domain: ${domain}, ipAddress: ${ipAddress} }`);
 
     }
 
@@ -118,7 +121,7 @@ class Controller {
     
                     for (const [key, value] of Object.entries(this.#dnsMappings)) {
         
-                        blockyConfig.customDNS.mapping[value.domain] = value.ip;
+                        blockyConfig.customDNS.mapping[value.domain] = value.ipAddress;
         
                     }
         
@@ -126,9 +129,12 @@ class Controller {
         
                 blockyConfigValue = BlockyConfig.stringifyAndValidate(blockyConfig);
     
-                this.#blockyConfigMap.writeValue('config.yaml', blockyConfigValue);
+                this.#blockyConfigMap.writeValue('config.yml', blockyConfigValue);
     
                 await this.#blockyConfigMap.writeToCluster();
+
+                await this.#blockyDeployment.rolloutRestart();
+
                 this.#isDirty = false;
         
                 console.log("Wrote Blocky configuration");

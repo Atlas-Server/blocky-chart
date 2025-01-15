@@ -11,5 +11,5 @@ metadata:
 {{- end }}
 spec:
   domain: {{ $mapping.domain }}
-  ip: {{ $mapping.ip }}
+  ipAddress: {{ $mapping.ipAddress }}
 {{- end }}

@@ -11,11 +11,14 @@ const CONTROLLER_CONFIG_SCHEMA = {
                 configMapName: { 
                     type: 'string'
                 },
-                configMapNamespace: { 
+                deploymentName: { 
+                    type: 'string'
+                },
+                namespace: { 
                     type: 'string'
                 },
             },
-            required: ["configMapName", "configMapNamespace"],
+            required: ["configMapName", "namespace"],
             additionalProperties: false
         },
         controller: {
