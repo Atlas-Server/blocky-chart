@@ -51,6 +51,6 @@ webService:
 dnsMappings:
   - name: blocky-dashboard
     domain: "blocky.atl.as"
-    ip: ""
+    ipAddress: ""
     labels:
       app: blocky

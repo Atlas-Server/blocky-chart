@@ -9,7 +9,8 @@ data:
   config.yaml: |-
     blocky:
       configMapName: blocky-config
-      configMapNamespace: {{ .Release.Namespace }}
+      deploymentName: blocky-application
+      namespace: {{ .Release.Namespace }}
     controller:
       watchDNSMappings: {{ .Values.controller.config.watchDNSMappings | default true }}
       updateInterval: {{ .Values.controller.config.updateInterval | default 5000 }}
