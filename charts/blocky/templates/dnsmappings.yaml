@@ -1,3 +1,15 @@
+{{- if .Values.dashboard.enabled -}}
+apiVersion: blocky.io/v1
+kind: DnsMapping
+metadata:
+  name: blocky-dashboard
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: blocky
+spec:
+  domain: {{ .Values.dashboard.domain }}
+  ipAddress: {{ .Values.dashboard.ipAddress }}
+{{- end }}
 {{- range $mapping := $.Values.dnsMappings }}
 ---
 apiVersion: blocky.io/v1
