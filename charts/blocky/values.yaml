@@ -5,8 +5,17 @@ application:
     tag: latest
     pullPolicy: IfNotPresent
   config:
-    upstreamDnsServers: []
-    blockLists: []
+    upstreams:
+      groups:
+        default:
+          - 8.8.8.8
+          - 8.8.4.4
+    blocking:
+      denylists:
+        ads: []
+      clientGroupsBlock:
+        default:
+          - ads
   resources:
     requests:
       cpu: "50m"
@@ -48,9 +57,9 @@ webService:
   type: ClusterIP
   additionalProperties: {}
 
-dnsMappings:
-  - name: blocky-dashboard
-    domain: "blocky.atl.as"
-    ipAddress: ""
-    labels:
-      app: blocky
+dashboard:
+  enabled: true
+  domain: ""
+  ipAddress: ""
+
+dnsMappings: []
